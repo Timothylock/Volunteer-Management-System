@@ -15,15 +15,16 @@
 
 
 import java.awt.*; 
+
 import javax.swing.*; 
 
 
 
 
 public class startPanel extends JPanel{ 
-  ImageIcon background = new ImageIcon(getClass().getResource("startheader.png"));
+	ImageIcon background = new ImageIcon(getClass().getResource("startheader.png"));
 
-  
+
   //Methods 
   //overides JPanel 
   public void paintComponent(Graphics g){ 
