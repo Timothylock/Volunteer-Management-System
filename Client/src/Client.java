@@ -18,7 +18,7 @@ import java.awt.image.*;
 
 public class Client implements ActionListener, MouseListener, MouseMotionListener{
 	//Version
-	String strVersion = "1.3B";
+	String strVersion = "0.41alpha";
 	
 	//Networking Components
 	JTextField ssmfield;
