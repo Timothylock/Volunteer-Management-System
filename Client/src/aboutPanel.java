@@ -1,11 +1,12 @@
 import java.awt.*; 
+
 import javax.swing.*; 
 
 
 
 
-public class startPanel extends JPanel{ 
-	ImageIcon background = new ImageIcon(getClass().getResource("startheader.png"));
+public class aboutPanel extends JPanel{ 
+	ImageIcon background = new ImageIcon(getClass().getResource("aboutheader.png"));
 
 
   //Methods 
@@ -17,7 +18,7 @@ public class startPanel extends JPanel{
   }
   
   //Constructors 
-  public startPanel(){ 
+  public aboutPanel(){ 
     super();  
   }   
 }

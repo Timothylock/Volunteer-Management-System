@@ -62,6 +62,36 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 	JLabel failureLabel;
 	Timer displayIcon;
 	
+	//Vol Inq Window
+	JFrame inqWindow;
+	inqPanel inqPanel;
+	JLabel inqVolNameLabel;
+	JLabel inqVolIDLabel;
+	JLabel inqVolEmailLabel;
+	JLabel inqVolSignInLabel;
+	JLabel inqVolSignOutLabel;
+	JLabel inqVolAccumulatedHoursLabel;
+	JTextField inqVolName;
+	JTextField inqVolID;
+	JTextField inqVolEmail;
+	JTextField inqVolSignIn;
+	JTextField inqVolSignOut;
+	JTextField inqVolAccumulatedHours;
+	JLabel inqTitle;
+	JButton inqSave;
+	JButton inqCancel;
+	
+	//About Window
+	JFrame aboutWindow;
+	aboutPanel aboutPanel;
+	JTextArea license;
+	JScrollPane licenseScroll;
+	int moveChat = 0;
+	JLabel aboutTitle;
+	JLabel aboutVersion;
+	JLabel aboutDescription;
+	JLabel aboutAuthor;
+	JLabel aboutDonate;
 	
 	//Menu
 	JMenuBar menuBar;
@@ -124,8 +154,12 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 			try{
 				if (mode.equals("Signing In")){
 					this.intMode = 1;
+			    	signin.setText("Sign In");
+			    	manualSignIn.setText("Manual Sign In");
 				}else if (mode.equals("Signing Out")){
 					this.intMode = 2;
+			    	signin.setText("Sign Out");
+			    	manualSignIn.setText("Manual Sign Out");
 				}else{
 					JOptionPane.showMessageDialog(startWindow, "An option was not selected. Defaulting to signing in");
 					this.intMode = 1;
@@ -175,6 +209,13 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 					//WINDOW
 				}else if(strTemp[1].equals("NOEXIST")){
 			    	JOptionPane.showMessageDialog(null, "The volunteer email/barcode does not exist. Please check your spelling", "Does Not Exist", JOptionPane.INFORMATION_MESSAGE);
+				}else if(strTemp[1].equals("VOLDATA")){
+					inqVolID.setText(strTemp[2]);
+					inqVolName.setText(strTemp[3]);
+					inqVolEmail.setText(strTemp[4]);
+					inqVolSignIn.setText(strTemp[5]);
+					inqVolSignOut.setText (strTemp[6]);
+					inqWindow.setVisible(true);
 				}
 					
 			}
@@ -189,13 +230,35 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 			strEmail = JOptionPane.showInputDialog ( "Enter the email of the volunteer" );
 			if (intMode == 1){
 				ssm.sendText(strIP + "," + strPassword + ",MANUALSIGNIN," + strEmail);
+			}else if(intMode == 2){
+				ssm.sendText(strIP + "," + strPassword + ",MANUALSIGNOUT," + strEmail);
 			}
 			volunteerIDField.requestFocusInWindow();
 		}else if(evt.getSource () == signin){
 			if (intMode == 1){
 				ssm.sendText(strIP + "," + strPassword + ",SIGNIN," + volunteerIDField.getText());
 				volunteerIDField.setText("");
+			}else if(intMode == 2){
+				ssm.sendText(strIP + "," + strPassword + ",SIGNOUT," + volunteerIDField.getText());
 			}
+		}else if(evt.getSource() == signinMenuItem){
+			intMode = 1;
+	    	signin.setText("Sign In");
+	    	manualSignIn.setText("Manual Sign In");
+	    	JOptionPane.showMessageDialog(null, "Mode switched to SIGN IN. You can now sign in volunteers", "Mode Switched", JOptionPane.INFORMATION_MESSAGE);
+		}else if(evt.getSource() == signoutMenuItem){
+			intMode = 2;
+	    	signin.setText("Sign Out");
+	    	manualSignIn.setText("Manual Sign Out");
+	    	JOptionPane.showMessageDialog(null, "Mode switched to SIGN OUT. You can now sign out volunteers", "Mode Switched", JOptionPane.INFORMATION_MESSAGE);
+		}else if(evt.getSource() == inqSave){
+			ssm.sendText(strIP + "," + strPassword + ",UPDATE," + inqVolID.getText() + "," + inqVolName.getText() + "," +  inqVolEmail.getText() + "," + inqVolSignIn.getText() + "," +  inqVolSignOut.getText() + "," + inqVolAccumulatedHours.getText());
+			inqWindow.setVisible(false);
+			JOptionPane.showMessageDialog(null, "Volunteer Data Updated!", "Data Saved", JOptionPane.INFORMATION_MESSAGE);
+		}else if(evt.getSource() == inqCancel){
+			inqWindow.setVisible(false);
+		}else if(evt.getSource() == aboutMenuItem){
+			aboutWindow.setVisible(true);
 		}
 	}
 	public void mouseDragged(MouseEvent evt){
@@ -390,8 +453,151 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 		
 		displayIcon = new Timer(2000, this);
 		
+		//Inquiry Window
+		inqWindow = new JFrame ("Edit Volunteer Data");
+		inqWindow.setSize(500,400);
 		
-
+		
+		inqPanel = new inqPanel();
+		inqPanel.setLayout(null);
+		inqWindow.setContentPane(inqPanel);
+		
+		inqVolIDLabel = new JLabel("Volunteer ID:");
+		inqVolIDLabel.setLocation(20,50);
+		inqVolIDLabel.setSize(600,50);
+		inqVolIDLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolIDLabel);
+		
+		inqVolNameLabel = new JLabel("Volunteer Name:");
+		inqVolNameLabel.setLocation(20,90);
+		inqVolNameLabel.setSize(600,50);
+		inqVolNameLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolNameLabel);
+		
+		inqVolEmailLabel = new JLabel("Volunteer Email:");
+		inqVolEmailLabel.setLocation(20,130);
+		inqVolEmailLabel.setSize(600,50);
+		inqVolEmailLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolEmailLabel);
+		
+		inqVolSignInLabel = new JLabel("Sign In Time:");
+		inqVolSignInLabel.setLocation(20,170);
+		inqVolSignInLabel.setSize(600,50);
+		inqVolSignInLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolSignInLabel);
+		
+		inqVolSignOutLabel = new JLabel("Sign Out Time:");
+		inqVolSignOutLabel.setLocation(20,210);
+		inqVolSignOutLabel.setSize(600,50);
+		inqVolSignOutLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolSignOutLabel);
+		
+		inqVolAccumulatedHoursLabel = new JLabel("Accumulated Hours:");
+		inqVolAccumulatedHoursLabel.setLocation(20,250);
+		inqVolAccumulatedHoursLabel.setSize(600,50);
+		inqVolAccumulatedHoursLabel.setFont(new Font("Calibri", Font.BOLD, 20));
+		inqPanel.add(inqVolAccumulatedHoursLabel);
+		
+		inqVolID = new JTextField ();
+		inqVolID.setEditable(true);
+		inqVolID.setSize(250,25);
+		inqVolID.setLocation(205,60);
+		inqVolID.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolID);
+		
+		inqVolName = new JTextField ();
+		inqVolName.setEditable(true);
+		inqVolName.setSize(250,25);
+		inqVolName.setLocation(205,100);
+		inqVolName.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolName);
+		
+		inqVolEmail = new JTextField ();
+		inqVolEmail.setEditable(true);
+		inqVolEmail.setSize(250,25);
+		inqVolEmail.setLocation(205,140);
+		inqVolEmail.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolEmail);
+		
+		inqVolSignIn = new JTextField ();
+		inqVolSignIn.setEditable(true);
+		inqVolSignIn.setSize(250,25);
+		inqVolSignIn.setLocation(205,180);
+		inqVolSignIn.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolSignIn);
+		
+		inqVolSignOut = new JTextField ();
+		inqVolSignOut.setEditable(true);
+		inqVolSignOut.setSize(250,25);
+		inqVolSignOut.setLocation(205,220);
+		inqVolSignOut.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolSignOut);
+		
+		inqVolAccumulatedHours = new JTextField ();
+		inqVolAccumulatedHours.setEditable(true);
+		inqVolAccumulatedHours.setSize(250,25);
+		inqVolAccumulatedHours.setLocation(205,260);
+		inqVolAccumulatedHours.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqVolAccumulatedHours);
+		
+		inqTitle = new JLabel("Edit Volunteer Data");
+		inqTitle.setLocation(20,5);
+		inqTitle.setSize(600,50);
+		inqTitle.setFont(new Font("Calibri", Font.ITALIC, 35));
+		inqPanel.add(inqTitle);
+		
+		inqSave = new JButton("Update Info");
+		inqSave.addActionListener(this);
+		inqSave.setSize(200,40);
+		inqSave.setLocation(254, 300);
+		inqSave.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqSave);
+		
+		inqCancel = new JButton("Cancel");
+		inqCancel.addActionListener(this);
+		inqCancel.setSize(100,40);
+		inqCancel.setLocation(20, 300);
+		inqCancel.setFont(new Font("Calibri", Font.PLAIN, 20));
+		inqPanel.add(inqCancel);
+		
+		//AboutWindow
+		aboutWindow = new JFrame ("About");
+		aboutWindow.setSize(400,500);
+		
+		aboutPanel = new aboutPanel();
+		aboutPanel.setLayout(null);
+		aboutWindow.setContentPane(aboutPanel);
+		
+		aboutTitle = new JLabel("Volunteer Management System");
+		aboutTitle.setLocation(20,70);
+		aboutTitle.setSize(600,50);
+		aboutTitle.setFont(new Font("Calibri", Font.BOLD, 20));
+		aboutPanel.add(aboutTitle);
+		
+		aboutVersion = new JLabel("Version: " + strVersion);
+		aboutVersion.setLocation(20,100);
+		aboutVersion.setSize(600,50);
+		aboutVersion.setFont(new Font("Calibri", Font.PLAIN, 20));
+		aboutPanel.add(aboutVersion);
+		
+		aboutAuthor = new JLabel("Written by Timothy Lock");
+		aboutAuthor.setLocation(20,130);
+		aboutAuthor.setSize(600,50);
+		aboutAuthor.setFont(new Font("Calibri", Font.PLAIN, 20));
+		aboutPanel.add(aboutAuthor);
+		
+		aboutDescription = new JLabel("An easy way to keep track of volunteer hours via barcode!");
+		aboutDescription.setLocation(20,160);
+		aboutDescription.setSize(600,50);
+		aboutDescription.setFont(new Font("Calibri", Font.PLAIN, 15));
+		aboutPanel.add(aboutDescription);
+		
+		aboutDonate = new JLabel("Over 100 hours spent. Please donate if you can! :)");
+		aboutDonate.setLocation(20,210);
+		aboutDonate.setSize(600,50);
+		aboutDonate.setFont(new Font("Calibri", Font.BOLD, 17));
+		aboutPanel.add(aboutDonate);
+		
 	    //Menu
 	    menuBar = new JMenuBar();
 	    mainWindow.setJMenuBar(menuBar);
@@ -412,7 +618,7 @@ public class Client implements ActionListener, MouseListener, MouseMotionListene
 	    
 	    addHoursMenuItem = new JMenuItem("Add/Remove Hours");
 	    addHoursMenuItem.addActionListener(this);
-	    volunteerMenu.add(addHoursMenuItem);
+	    //volunteerMenu.add(addHoursMenuItem);     //This function got depreciated into "Edit Volunteer Data"
 	    
 	    inquiryMenuItem = new JMenuItem("View/Edit Volunteer Information");
 	    inquiryMenuItem.addActionListener(this);
